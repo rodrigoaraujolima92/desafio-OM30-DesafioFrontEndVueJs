@@ -1,0 +1,11 @@
+.btn {
+  @apply p-2 rounded bg-emerald-500 text-white font-bold transition-colors duration-150;
+
+  &.full {
+    @apply w-full;
+  }
+
+  &:hover {
+    @apply bg-emerald-600;
+  }
+}

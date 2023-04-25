@@ -1,0 +1,15 @@
+.input {
+  @apply bg-white text-black font-normal font-sans p-2 px-3 rounded border border-slate-200 outline-none;
+
+  &:focus {
+    @apply border border-blue-400;
+  }
+}
+
+.error-input {
+  @apply border border-red-400;
+}
+
+.error-mensagem {
+  @apply text-red-600 text-xs p-1;
+}
