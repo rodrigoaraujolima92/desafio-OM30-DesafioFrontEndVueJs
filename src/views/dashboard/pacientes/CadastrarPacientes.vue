@@ -14,40 +14,71 @@
 
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 justify-center items-center px-4 my-2">
-      <div>
-        <div>Foto</div>
+      <div class="field">
+        <div class="label">Foto</div>
         <input class="input w-full" type="file" @change="changeFile($event)">
       </div>
-      <div>
-        <div>Nome Completo*</div>
-        <input class="input w-full" type="text">
+      <div class="field">
+        <div class="label">Nome Completo*</div>
+        <input class="input w-full" v-model="form.nomePaciente" type="text">
       </div>
-      <div>
-        <div>Nome da mãe*</div>
-        <input class="input w-full" type="text">
+      <div class="field">
+        <div class="label">Nome da mãe*</div>
+        <input class="input w-full" v-model="form.nomeMae" type="text">
       </div>
 
-      <div>
-        <div>
+      <div class="field">
+        <div class="label">
           Data de Nascimento*
         </div>
-        <input class="input w-full" type="date">
+        <input class="input w-full" v-model="form.dataNascimento" type="date">
       </div>
-      <div>
-        <div>CPF*</div>
-        <input placeholder="000.000.000-00" v-maska data-maska="###.###.###-##" class="input w-full" type="text">
+      <div class="field">
+        <div class="label">CPF*</div>
+        <input v-model="form.cpf" placeholder="000.000.000-00" v-maska data-maska="###.###.###-##" class="input w-full"
+          type="text">
       </div>
-      <div>
-        <div>CNS*</div>
-        <input class="input w-full" type="text">
+      <div class="field">
+        <div class="label">CNS*</div>
+        <input class="input w-full" v-model="form.cns" type="text">
       </div>
     </div>
 
     <div class="px-4 mb-2">
-      <div>Endereço</div>
-      <div class="grid grid-cols">
-        <input @change="changeCEP" class="input" placeholder="00000-000" v-maska data-maska="#####-###"
-          v-model="form.endereco.cep" type="text">
+      <div class="text-slate-500 pt-1 pb-2 uppercase">Endereço</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        <div class="field">
+          <div class="label">CEP</div>
+          <input class="input" placeholder="00000-000" v-maska data-maska="#####-###" v-model="cepTemp" type="text">
+        </div>
+        <div class="field">
+          <div class="label">UF</div>
+          <input disabled class="input" v-model="form.endereco.uf">
+        </div>
+        <div class="field">
+          <div class="label">Cidade</div>
+          <input disabled class="input" v-model="form.endereco.localidade">
+        </div>
+        <div class="field">
+          <div class="label">Logradouro</div>
+          <input class="input" v-model="form.endereco.logradouro">
+        </div>
+        <div class="field">
+          <div class="label">Bairro</div>
+          <input class="input" v-model="form.endereco.bairro">
+        </div>
+        <div class="field">
+          <div class="label">Complemento</div>
+          <input class="input" v-model="form.endereco.complemento">
+        </div>
+      </div>
+    </div>
+    <div class="p-4 grid grid-cols-1 sm:grid-cols-2">
+      <div class="text-left">
+        <button class="btn w-full sm:w-auto !bg-gray-700 !px-5" @click='close()'>Cancelar</button>
+      </div>
+      <div class="text-right mt-4 sm:mt-0">
+        <button class="btn w-full sm:w-auto !px-5" @click='close()'>Cadastrar</button>
       </div>
     </div>
   </div>
@@ -55,7 +86,8 @@
 
 <script>
 import { useVuelidate } from "@vuelidate/core";
-import { required, email, minLength, maxLength } from "@vuelidate/validators";
+import { required, /*email, minLength, maxLength*/ } from "@vuelidate/validators";
+//import axios from "axios";
 import { vMaska } from "maska"
 // CNS FORMATADO: 137 7374 3961 0007
 export default {
@@ -66,6 +98,7 @@ export default {
   directives: { maska: vMaska },
   data: () => {
     return {
+      cepTemp: null,
       form: {
         foto: null,
         nomePaciente: '',
@@ -87,13 +120,14 @@ export default {
   validations() {
     return {
       form: {
-        email: { required, email },
-        senha: { required, minLength: minLength(6), maxLength: maxLength(6) }
+        nomePaciente: { required },
+        nomeMae: { required }
       }
     };
   },
   watch: {
-    'form.endereco.cep': function (newValue) {
+    'cepTemp': function (newValue) {
+      console.log(newValue)
       if (newValue && newValue.length === 9) {
         this.changeCEP();
       }
@@ -104,13 +138,23 @@ export default {
       this.$emit('close');
     },
     changeCEP() {
-      const requestCEP = this.form.endereco.cep.replace('-', '');
+      //82310-080
+      const CEPOrigem = `${this.cepTemp}`;
+      const requestCEP = CEPOrigem.replace('-', '');
+      this.form.endereco.cep = requestCEP;
       const url = `https://viacep.com.br/ws/${requestCEP}/json/`;
-      fetch(url).then(resp => {
-        console.log(resp);
-      }).catch(err => {
-        console.error(err);
-      })
+      fetch(url)
+        .then((response) => response.json())
+        .then(resp => {
+          console.log('JSON OK', resp);
+          this.form.endereco.bairro = resp.bairro;
+          this.form.endereco.uf = resp.uf;
+          this.form.endereco.complemento = resp.complemento;
+          this.form.endereco.localidade = resp.localidade;
+          this.form.endereco.logradouro = resp.logradouro;
+        }).catch(err => {
+          console.error(err);
+        })
     },
     changeFile(e) {
       console.log(e);
@@ -129,3 +173,13 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.field {
+  @apply py-2;
+}
+
+.label {
+  @apply text-slate-700;
+}
+</style>

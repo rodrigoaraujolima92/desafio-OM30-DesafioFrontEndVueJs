@@ -4,6 +4,10 @@
   &:focus {
     @apply border border-blue-400;
   }
+
+  &:disabled {
+    @apply bg-slate-100;
+  }
 }
 
 .error-input {

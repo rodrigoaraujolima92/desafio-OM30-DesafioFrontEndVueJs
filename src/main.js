@@ -7,8 +7,6 @@ import axios from "axios";
 import "./assets/tailwind.css";
 import "./styles/base.scss";
 
-axios.defaults.baseURL = "http://localhost:3000/api";
-
 if (process.env.NODE_ENV === "development") {
   makeServer();
 }
@@ -22,7 +20,7 @@ axios.interceptors.response.use(
       console.log("Não autorizado");
       router.push("/login");
     }
-    return Promise.reject(error.response);
+    return Promise.reject(error?.response);
   }
 );
 

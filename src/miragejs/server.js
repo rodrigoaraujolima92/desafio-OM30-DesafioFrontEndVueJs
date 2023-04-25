@@ -35,7 +35,6 @@ export function makeServer({ environment = "development" } = {}) {
     },
 
     routes() {
-      this.passthrough("*");
       this.namespace = "api";
       this.urlPrefix = "http://localhost:3000";
       this.timing = 750;
@@ -55,21 +54,23 @@ export function makeServer({ environment = "development" } = {}) {
         return db.pacientes;
       });
 
-      this.patch("/todos/:id", (schema, request) => {
-        let todo = JSON.parse(request.requestBody).data;
+      this.patch("/pacientes/:id", (schema, request) => {
+        let paciente = JSON.parse(request.requestBody).data;
 
-        return schema.db.todos.update(todo.id, todo);
+        return schema.db.pacientes.update(paciente.id, paciente);
       });
 
       this.post("/pacientes", (schema, request) => {
-        let todo = JSON.parse(request.requestBody).data;
+        let paciente = JSON.parse(request.requestBody).data;
 
-        return schema.db.todos.insert(todo);
+        return schema.db.pacientes.insert(paciente);
       });
 
       this.delete("/pacientes/:id", (schema, request) => {
-        return schema.db.todos.remove(request.params.id);
+        return schema.db.pacientes.remove(request.params.id);
       });
+      this.passthrough("**");
+      this.passthrough("https://viacep.com.br/**");
     },
   });
 

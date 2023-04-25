@@ -20,7 +20,7 @@
           Buscar
         </button>
       </div>
-      <di class="text-center sm:text-right">
+      <div class="text-center sm:text-right">
         <button class="rounded bg-primary py-2 px-3 text-white" @click="abrirTelaCadastroPacientes()">
           <div class="flex justify-center items-center">
             <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -30,7 +30,7 @@
             Cadastrar
           </div>
         </button>
-      </di>
+      </div>
 
     </div>
     <div id="listaPacientes">
@@ -85,7 +85,6 @@
 import Dialog from '@/components/Dialog.vue';
 import CadastrarPacientes from './CadastrarPacientes.vue';
 import ServicePacientes from "@/services/pacientes";
-
 export default {
   name: "v-pacientes",
   components: { Dialog, CadastrarPacientes },
